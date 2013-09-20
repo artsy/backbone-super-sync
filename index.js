@@ -16,7 +16,7 @@ module.exports = function(method, model, options) {
   module.exports.editRequest(req);
   
   // Inject POST/PUT data in body or GET data in querystring
-  if (method === 'create' || method === 'update') {
+  if (method == 'create' || method == 'update') {
     req.send(data).set('content-length', JSON.stringify(data).length); 
   } else {
     req.query(data);

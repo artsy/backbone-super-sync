@@ -4,6 +4,7 @@ var superSync = require('./index.js');
 var lastRequest, model;
 
 var app = express();
+app.use(express.bodyParser());
 app.all('/foo/bar', function(req, res) {
   lastRequest = req;
   res.send({ foo: 'bar' });
@@ -53,7 +54,7 @@ describe('Backbone Super Sync', function() {
     });
   });
   
-  context('GET requests', function() {
+  context('POST requests', function() {
     
     it('adds the content-length header', function(done) {
       model.save({ foo: 'bar' }, {
@@ -72,7 +73,5 @@ describe('Backbone Super Sync', function() {
         }
       });
     });
-    
   });
-  
-})
+});
