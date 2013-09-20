@@ -4,7 +4,7 @@ var superSync = require('./index.js');
 var lastRequest, model;
 
 var app = express();
-app.get('/foo/bar', function(req, res) {
+app.all('/foo/bar', function(req, res) {
   lastRequest = req;
   res.send({ foo: 'bar' });
 });
@@ -47,6 +47,27 @@ describe('Backbone Super Sync', function() {
         data: { foo: 'bar' },
         success: function() {
           lastRequest.query.foo.should.equal('bar');
+          done()
+        }
+      });
+    });
+  });
+  
+  context('GET requests', function() {
+    
+    it('adds the content-length header', function(done) {
+      model.save({ foo: 'bar' }, {
+        success: function() {
+          lastRequest.headers['content-length'].should.equal('13');
+          done()
+        }
+      });
+    });
+    
+    it('adds the body data', function(done) {
+      model.save({ foo: 'bar' }, {
+        success: function() {
+          lastRequest.body.foo.should.equal('bar');
           done()
         }
       });
