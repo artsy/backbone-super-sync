@@ -6,7 +6,7 @@ A server-side Backbone.sync adapter that does HTTP requests in node using [super
 
 ````javascript
 var Backbone = require('backbone');
-Backbone.sync = require('backbone-server-sync');
+Backbone.sync = require('backbone-super-sync');
 ````
 
 ## Adding to the Backbone.sync request
@@ -15,7 +15,7 @@ Sometimes you need to add to the requests made by Backbone.sync, such as adding 
 
 ````javascript
 var Backbone = require('backbone');
-superSync = require('backbone-server-sync');
+superSync = require('backbone-super-sync');
 superSync.editRequest(function(req) {
   req.set({ 'X-ACCESS-TOKEN': 'foobar' });
 });
