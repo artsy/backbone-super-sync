@@ -15,8 +15,8 @@
     "node": ">= 0.10.x"
   },
   "scripts": {
-        "test": "make test"
-        },
+    "test": "make test"
+  },
   "dependencies": {
     "superagent": "0.15.x"
   },
