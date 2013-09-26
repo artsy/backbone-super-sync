@@ -31,7 +31,7 @@ describe('Backbone Super Sync', function() {
       model.fetch({
         success: function() {
           model.get('foo').should.equal('bar');
-          done()
+          done();
         }
       });
     });
@@ -39,7 +39,10 @@ describe('Backbone Super Sync', function() {
     it('calls the error callback', function(done) {
       model.url = 'http://localhost:5000/err'
       model.fetch({
-        error: function() { done() }
+        error: function(res) { 
+          res.url.should.equal(model.url);
+          done();
+        }
       });
     });
     
@@ -48,7 +51,7 @@ describe('Backbone Super Sync', function() {
         data: { foo: 'bar' },
         success: function() {
           lastRequest.query.foo.should.equal('bar');
-          done()
+          done();
         }
       });
     });
@@ -60,16 +63,26 @@ describe('Backbone Super Sync', function() {
       model.save({ foo: 'bar' }, {
         success: function() {
           lastRequest.headers['content-length'].should.equal('13');
-          done()
+          done();
         }
       });
     });
     
+    it('calls the error callback', function(done) {
+      model.url = 'http://localhost:5000/err'
+      model.fetch({
+        error: function(res) { 
+          res.url.should.equal(model.url);
+          done();
+        }
+      });
+    });
+
     it('adds the body data', function(done) {
       model.save({ foo: 'bar' }, {
         success: function() {
           lastRequest.body.foo.should.equal('bar');
-          done()
+          done();
         }
       });
     });
