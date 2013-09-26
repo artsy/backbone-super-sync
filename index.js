@@ -26,7 +26,7 @@ module.exports = function(method, model, options) {
     if (res.ok && options.success) {
       options.success(res.body);
     } else if (!res.ok && options.error) {
-      options.error(res.body);
+      options.error(res);
     }
   });
 
