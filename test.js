@@ -40,7 +40,7 @@ describe('Backbone Super Sync', function() {
       });
     });
     
-    it('calls the error callback', function(done) {
+    it("it returns the full 'res' object from superagent because it is the closest thing to an xhr we have", function(done) {
       model.url = 'http://localhost:5000/err'
       model.fetch({
         error: function(res) { 
@@ -82,7 +82,7 @@ describe('Backbone Super Sync', function() {
       });
     });
     
-    it('calls the error callback', function(done) {
+    it("it returns the full 'res' object from superagent because it is the closest thing to an xhr we have", function(done) {
       model.url = 'http://localhost:5000/err'
       model.fetch({
         error: function(res) { 
