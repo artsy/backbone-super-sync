@@ -8,7 +8,7 @@ METHOD_MAP = {
 };
 
 module.exports = function(method, model, options) {
-  var url = typeof model.url == 'function' ? model.url() : model.url;
+  var url = options.url || (typeof model.url == 'function' ? model.url() : model.url);
   var data = options.data || (method === 'create' || method === 'update' ? model.toJSON() : {});
   var req = request[METHOD_MAP[method]](url);
 

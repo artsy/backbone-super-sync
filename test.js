@@ -9,6 +9,10 @@ app.all('/foo/bar', function(req, res) {
   lastRequest = req;
   res.send({ foo: 'bar' });
 });
+app.all('/custom/url', function(req, res) {
+  lastRequest = req;
+  res.send({ baz: 'qux' });
+});
 app.get('/err', function(req, res) {
   res.send(404, { message: 'Not Found' });
 });
@@ -51,6 +55,16 @@ describe('Backbone Super Sync', function() {
         data: { foo: 'bar' },
         success: function() {
           lastRequest.query.foo.should.equal('bar');
+          done();
+        }
+      });
+    });
+    
+    it('preferences the options url', function(done) {
+      model.fetch({
+        url: 'http://localhost:5000/custom/url',
+        success: function() {
+          model.get('baz').should.equal('qux');
           done();
         }
       });
