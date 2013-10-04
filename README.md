@@ -15,7 +15,7 @@ Sometimes you need to add to the requests made by Backbone.sync, such as adding 
 
 ````javascript
 var Backbone = require('backbone');
-superSync = require('backbone-super-sync');
+var superSync = require('backbone-super-sync');
 superSync.editRequest(function(req) {
   req.set({ 'X-ACCESS-TOKEN': 'foobar' });
 });
