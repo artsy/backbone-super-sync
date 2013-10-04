@@ -22,6 +22,14 @@ superSync.editRequest(function(req) {
 Backbone.sync = superSync;
 ````
 
+The arguments of Backbone.sync are also passed to editRequest in case you need globally adjust the request based off `options` or otherwise.
+
+````javascript
+superSync.editRequest(function(req, method, model, options) {
+  req.set({ 'X-ACCESS-TOKEN': options.user.get('access_token') });
+});
+````
+
 ## Contributing
 
 Please fork the project and submit a pull request with tests. Install node modules `npm install` and run tests with `make test`

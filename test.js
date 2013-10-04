@@ -69,6 +69,18 @@ describe('Backbone Super Sync', function() {
         }
       });
     });
+    
+    it('passes the Backbone.sync arguments to editRequest', function(done) {
+      superSync.editRequest = function(req, method, model, options) {
+        options.foo.should.equal('bar');
+        superSync.editRequest = function(){};
+        done();
+      }
+      model.fetch({
+        url: 'http://localhost:5000/custom/url',
+        foo: 'bar'
+      });
+    });
   });
   
   context('POST requests', function() {

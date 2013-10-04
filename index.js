@@ -13,7 +13,7 @@ module.exports = function(method, model, options) {
   var req = request[METHOD_MAP[method]](url);
 
   // Allow intercepting of the request object to inject sync-wide things like an oAuth token.
-  module.exports.editRequest(req);
+  module.exports.editRequest(req, method, model, options);
 
   // Inject POST/PUT data in body or GET data in querystring
   if (method == 'create' || method == 'update') {
