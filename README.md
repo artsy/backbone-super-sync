@@ -22,7 +22,7 @@ superSync.editRequest(function(req) {
 Backbone.sync = superSync;
 ````
 
-The arguments of Backbone.sync are also passed to editRequest in case you need globally adjust the request based off `options` or otherwise.
+The arguments of Backbone.sync are also passed to editRequest in case you need to globally adjust the request based off `options` or otherwise.
 
 ````javascript
 superSync.editRequest(function(req, method, model, options) {
