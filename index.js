@@ -24,13 +24,14 @@ module.exports = function(method, model, options) {
 
   req.end(function(res) {
     if (res.ok && options.success) {
-      options.success(res.body);
+      options.res = res;
+      options.success(res.body, res);
     } else if (!res.ok && options.error) {
       options.error(res);
     }
   });
 
-  model.trigger('request', model);
+  model.trigger('request', model, req, options);
 };
 
 module.exports.editRequest = function(req) {}
