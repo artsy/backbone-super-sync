@@ -6,6 +6,10 @@
     "backbone",
     "sync"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/artsy/backbone-super-sync.git"
+  },
   "author": {
     "name": "Craig Spaeth",
     "email": "craigspaeth@gmail.com",
@@ -14,6 +18,7 @@
   "engines": {
     "node": ">= 0.10.x"
   },
+  
   "scripts": {
     "test": "make test"
   },
