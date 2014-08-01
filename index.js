@@ -9,8 +9,6 @@ METHOD_MAP = {
   'patch': 'patch'
 };
 
-var isServer = typeof window === 'undefined';
-
 module.exports = function(method, model, options) {
   var url = options.url || (typeof model.url == 'function' ? model.url() : model.url);
   var data = options.data || (method === 'create' || method === 'update' ? model.toJSON() : {});
