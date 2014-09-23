@@ -1,10 +1,11 @@
 var express = require('express');
 var Backbone = require('backbone');
 var superSync = require('./index.js');
+var bodyParser = require('body-parser');
 var lastRequest, model;
 
 var app = express();
-app.use(express.bodyParser());
+app.use(bodyParser());
 app.all('/foo/bar', function(req, res) {
   lastRequest = req;
   res.send({ foo: 'bar' });
