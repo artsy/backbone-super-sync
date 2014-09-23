@@ -1,7 +1,7 @@
 var request = require('superagent'),
     Q = require('q');
 
-METHOD_MAP = {
+var METHOD_MAP = {
   'create': 'post',
   'update': 'put',
   'delete': 'del',
