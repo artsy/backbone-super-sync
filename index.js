@@ -1,15 +1,13 @@
 var request = require('superagent'),
     Q = require('q');
 
-METHOD_MAP = {
+var METHOD_MAP = {
   'create': 'post',
   'update': 'put',
   'delete': 'del',
   'read': 'get',
   'patch': 'patch'
 };
-
-var isServer = typeof window === 'undefined';
 
 module.exports = function(method, model, options) {
   var url = options.url || (typeof model.url == 'function' ? model.url() : model.url);
@@ -22,11 +20,7 @@ module.exports = function(method, model, options) {
 
   // Inject POST/PUT data in body or GET data in querystring
   if (method == 'create' || method == 'update') {
-      if(isServer) {
-          req.send(data).set('content-length', JSON.stringify(data).length);
-      } else {
-          req.send(data);
-      }
+    req.send(data);
   } else {
     req.query(data);
   }

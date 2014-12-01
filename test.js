@@ -1,6 +1,7 @@
 var express = require('express');
 var Backbone = require('backbone');
 var superSync = require('./index.js');
+var bodyParser = require('body-parser');
 var lastRequest, model;
 var bodyParser = require('body-parser');
 

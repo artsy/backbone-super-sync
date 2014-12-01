@@ -1,6 +1,6 @@
 # Backbone Super Sync
 
-A server-side Backbone.sync adapter that does HTTP requests in node using [super-agent](https://github.com/visionmedia/superagent).
+An [isomorphic](http://nerds.airbnb.com/isomorphic-javascript-future-web-apps/) Backbone.sync adapter using [super-agent](https://github.com/visionmedia/superagent).
 
 ## Example
 
