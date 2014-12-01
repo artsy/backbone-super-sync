@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var superSync = require('./index.js');
 var bodyParser = require('body-parser');
 var lastRequest, model;
+var bodyParser = require('body-parser');
 
 var app = express();
 app.use(bodyParser());
@@ -48,11 +49,22 @@ describe('Backbone Super Sync', function() {
       });
     });
 
-    it("it returns the full 'res' object from superagent because it is the closest thing to an xhr we have", function(done) {
+    it("it returns the full 'res' object from superagent because it is the " +
+       "closest thing to an xhr we have", function(done) {
       model.url = 'http://localhost:5000/err'
       model.fetch({
         error: function(res) {
           res.url.should.equal(model.url);
+          done();
+        }
+      });
+    });
+
+    it("can handle true errors", function(done) {
+      model.url = 'http://localhost:5001/trueerr'
+      model.fetch({
+        error: function(model, res) {
+          res.toString().should.containEql("ECONNREFUSED");
           done();
         }
       });
@@ -147,7 +159,8 @@ describe('Backbone Super Sync', function() {
       });
     });
 
-    it("it returns the full 'res' object from superagent because it is the closest thing to an xhr we have", function(done) {
+    it("it returns the full 'res' object from superagent because it is the " +
+       "closest thing to an xhr we have", function(done) {
       model.url = 'http://localhost:5000/err'
       model.fetch({
         error: function(res) {
