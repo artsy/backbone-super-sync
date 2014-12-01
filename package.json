@@ -20,7 +20,7 @@
   },
 
   "scripts": {
-    "test": "make test"
+    "test": "mocha test.js -r should"
   },
   "dependencies": {
     "superagent": "0.15.x",
@@ -30,6 +30,7 @@
     "mocha": "*",
     "should": "*",
     "express": "*",
-    "backbone": "*"
+    "backbone": "*",
+    "body-parser": "*"
   }
 }

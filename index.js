@@ -38,17 +38,18 @@ module.exports = function(method, model, options) {
   }
 
   // End the request using Backbone callbacks and a Q promise
-  req.end(function(res) {
-    if (res.ok) {
+  req.end(function(err, res) {
+    if (err || (res && !res.ok)) {
+      deferred.reject(err || res);
+      if (options.error) options.error(err || res);
+    } else if (res.ok) {
       options.res = res;
       deferred.resolve(model);
       if (options.success) options.success(res.body, res);
-    } else if (!res.ok) {
-      deferred.reject(res);
-      if (options.error) options.error(res);
     }
     if (options.complete) options.complete(res);
   });
+
 
   // Trigger request and return our Q promise
   model.trigger('request', model, req, options);
