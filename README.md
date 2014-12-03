@@ -34,7 +34,7 @@ superSync.editRequest(function(req, method, model, options) {
 
 ## Built-in request caching
 
-At [Artsy](http://artsy.net) we naively cache our server-side Backbone.sync requests. You can configure Backbone Super Sync to do this by setting `superSync.cacheClient = client`. If the `cache: true` option is set, Backbone Super Sync will use the `cacheClient` to cache GET requests. The `client` API is based off of [node-redis](https://github.com/mranney/node_redis) but you could easily leverage this API to roll your own client.
+At [Artsy](http://artsy.net) we naively cache our server-side Backbone.sync requests. You can configure Backbone Super Sync to do this by setting `superSync.cacheClient = client`. If the `cache: true` option is set in a `model.fetch`, Backbone Super Sync will use the `cacheClient` to cache GET requests. The `client` API is based off of [node-redis](https://github.com/mranney/node_redis) but you could easily leverage this API to roll your own caching mechanism.
 
 e.g.
 
@@ -55,7 +55,7 @@ superSync.cacheClient = {
     });
   }
 }
-// Cache expiry time. Uses seconds and defaults to 3600 or 1 hour. You may
+// Cache expiry time. Uses seconds. Defaults to 3600 or 1 hour. You may
 // also pass `cacheTime: Number` in the options of a fetch to set per-request.
 superSync.defaultCacheTime = 60;
 
