@@ -62,7 +62,6 @@ module.exports = function(method, model, options) {
           success(res, model);
         }
       }
-      if(callback) callback(err, res);
     });
   }
 
@@ -75,9 +74,7 @@ module.exports = function(method, model, options) {
       } else if (cachedJSON) {
         success(JSON.parse(cachedJSON));
       } else {
-        send(function(err, res) {
-
-        });
+        send();
       }
     });
 
