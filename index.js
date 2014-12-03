@@ -18,6 +18,7 @@ module.exports = function(method, model, options) {
   var deferred = Q.defer();
   var cacheClient = module.exports.cacheClient;
   var cacheTime = options.cacheTime || module.exports.defaultCacheTime;
+  var cacheKey = url + JSON.stringify(data);
   var cached = options.cache && cacheClient;
 
   // Allow intercepting of the request object to inject sync-wide things like
@@ -37,10 +38,11 @@ module.exports = function(method, model, options) {
   }
 
   // Helpers to resolve success/error/complete and to send the request.
-  var success = function(res, model) {
-    if (options.success) options.success(res.body, res);
-    if (options.complete) options.complete(res);
-    deferred.resolve(model);
+  var success = function(data, res) {
+    options.res = res;
+    if (options.success) options.success(data, res);
+    if (options.complete) options.complete(data);
+    deferred.resolve(data);
   }
   var error = function(err) {
     if (options.error) options.error(err);
@@ -54,12 +56,12 @@ module.exports = function(method, model, options) {
       } else if (res.ok) {
         options.res = res;
         if (cached) {
-          cacheClient.expire(key, cacheTime);
-          cacheClient.set(key, JSON.stringify(res.body), function() {
-            success(res, model);
+          cacheClient.set(cacheKey, JSON.stringify(res.body), function() {
+            success(res.body, res);
           });
+          cacheClient.expire(cacheKey, cacheTime);
         } else {
-          success(res, model);
+          success(res.body, res);
         }
       }
     });
@@ -67,8 +69,7 @@ module.exports = function(method, model, options) {
 
   // If cache: true is set then try to retrieve it from cache first.
   if (cached) {
-    var key = url + JSON.stringify(data);
-    cacheClient.get(key, function(err, cachedJSON) {
+    cacheClient.get(cacheKey, function(err, cachedJSON) {
       if (err) {
         error(err);
       } else if (cachedJSON) {
