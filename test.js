@@ -158,7 +158,7 @@ describe('Backbone Super Sync', function() {
     var memoryCache;
 
     beforeEach(function() {
-      memoryCache = {}
+      memoryCache = {};
       model.sync.cacheClient = {
         set: function(key, val, callback) {
           memoryCache[key] = val;
@@ -185,8 +185,23 @@ describe('Backbone Super Sync', function() {
             success: function() {
               JSON.parse(memoryCache['http://localhost:5000/foo/bar{}'])
                 .foo.should.equal('bar');
-              done()
+              done();
             }
+          });
+        }
+      });
+    });
+
+    it('works caches with deferreds', function(done) {
+      model.fetch({
+        cache: true,
+        success: function() {
+          model.clear();
+          model.fetch({ cache: true }).then(function(res) {
+            requestCount.should.equal(1);
+            model.toJSON().foo.should.equal('bar');
+            res.foo.should.equal('bar');
+            done();
           });
         }
       });
