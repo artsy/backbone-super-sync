@@ -23,7 +23,7 @@
     "test": "mocha test.js -r should"
   },
   "dependencies": {
-    "superagent": "0.15.x",
+    "superagent": "*",
     "q": "*"
   },
   "devDependencies": {
