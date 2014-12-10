@@ -50,7 +50,7 @@ module.exports = function(method, model, options) {
     deferred.reject(err);
   }
   var send = function(callback) {
-    req.end(function(res) {
+    req.on('error', error).end(function(res) {
       if (!res.ok) {
         error(res);
       } else if (cached) {
@@ -64,7 +64,7 @@ module.exports = function(method, model, options) {
       } else {
         success(res);
       }
-    }).once('error', error);
+    });
   }
 
   // If cache: true is set then try to retrieve it from cache first.
