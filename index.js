@@ -50,21 +50,19 @@ module.exports = function(method, model, options) {
     deferred.reject(err);
   }
   var send = function(callback) {
-    req.end(function(err, res) {
-      if (err || (res && !res.ok)) {
-        error(err || res);
-      } else if (res.ok) {
-        if (cached) {
-          cacheClient.set(cacheKey, JSON.stringify({
-            body: res.body,
-            headers: res.headers
-          }), function() {
-            success(res);
-          });
-          cacheClient.expire(cacheKey, cacheTime);
-        } else {
+    req.on('error', error).end(function(res) {
+      if (!res.ok) {
+        error(res);
+      } else if (cached) {
+        cacheClient.set(cacheKey, JSON.stringify({
+          body: res.body,
+          headers: res.headers
+        }), function() {
           success(res);
-        }
+        });
+        cacheClient.expire(cacheKey, cacheTime);
+      } else {
+        success(res);
       }
     });
   }
