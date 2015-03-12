@@ -48,8 +48,10 @@ module.exports = function(method, model, options) {
     if (options.headers) {
       for(key in options.headers) req.set(key, options.headers[key]);
     }
-    req.on('error', error).end(function(res) {
-      if (!res.ok) {
+    req.end(function(err, res) {
+      if (err) {
+        error(err);
+      } else if (!res.ok) {
         error(res);
       } else if (cached) {
         cacheClient.set(cacheKey, JSON.stringify({

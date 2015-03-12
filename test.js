@@ -133,7 +133,7 @@ describe('Backbone Super Sync', function() {
       model.url = 'http://localhost:5000/err'
       model.fetch({
         complete: function(res) {
-          res.body.message.should.equal("Not Found");
+          res.message.should.equal("Not Found");
           done();
         }
       });
