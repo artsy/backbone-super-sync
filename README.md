@@ -18,18 +18,18 @@ Sometimes you need to add to the requests made by Backbone.sync, such as adding 
 ````javascript
 var Backbone = require('backbone');
 var superSync = require('backbone-super-sync');
-superSync.editRequest(function(req) {
+superSync.editRequest = function(req) {
   req.set({ 'XAPP-TOKEN': 'foobar' });
-});
+};
 Backbone.sync = superSync;
 ````
 
 The arguments of Backbone.sync are also passed to editRequest in case you need to globally adjust the request based off `options` or otherwise.
 
 ````javascript
-superSync.editRequest(function(req, method, model, options) {
+superSync.editRequest = function(req, method, model, options) {
   req.set({ 'X-ACCESS-TOKEN': options.user.get('access_token') });
-});
+};
 ````
 
 ## Built-in request caching
