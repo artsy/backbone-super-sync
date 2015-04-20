@@ -14,7 +14,7 @@ module.exports = function(method, model, options) {
   var url = (options.url ||
     (typeof model.url == 'function' ? model.url() : model.url));
   var data = (options.data ||
-    (method === 'create' || method === 'update' ? model.toJSON() : {}));
+    (method === 'create' || method === 'update' ? model.toJSON(options) : {}));
   var deferred = Q.defer();
   var cacheClient = module.exports.cacheClient;
   var cacheTime = options.cacheTime || module.exports.defaultCacheTime;
