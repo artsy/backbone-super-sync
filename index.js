@@ -51,7 +51,6 @@ var success = function(options, res, resolve) {
   options.res = { headers: res.headers };
   if (options.success) options.success(res.body);
   if (options.complete) options.complete(res.body);
-  console.log('resolve')
   resolve(res.body);
 }
 
