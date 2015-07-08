@@ -9,90 +9,87 @@ var METHOD_MAP = {
   'patch': 'patch'
 };
 
-module.exports = function(method, model, options) {
-  var req;
+var send = function (method, model, options, url, data, resolve, reject) {
   var url = (options.url ||
     (typeof model.url == 'function' ? model.url() : model.url));
   var data = (options.data ||
     (method === 'create' || method === 'update' ? model.toJSON() : {}));
-  var deferred = Q.defer();
-  var cacheClient = module.exports.cacheClient;
-  var cacheTime = options.cacheTime || module.exports.defaultCacheTime;
   var cacheKey = url + JSON.stringify(data);
-  var cached = options.cache && cacheClient;
 
-  // Helpers to resolve success/error/complete and to send the request.
-  var success = function(res) {
-    options.res = { headers: res.headers };
-    if (options.success) options.success(res.body);
-    if (options.complete) options.complete(res.body);
-    deferred.resolve(res.body);
+  // Allow intercepting of the request object to inject sync-wide things like
+  // an oAuth token.
+  var req = request[METHOD_MAP[method]](url);
+  module.exports.editRequest(req, method, model, options);
+  // Inject POST/PUT data in body or GET data in querystring
+  if (method == 'create' || method == 'update') {
+    req.send(data);
+  } else {
+    req.query(data);
   }
-  var error = function(err) {
-    if (options.error) options.error(err);
-    if (options.complete) options.complete(err);
-    deferred.reject(err);
+  // Add common Backbone options like `headers`
+  if (options.headers) {
+    for(key in options.headers) req.set(key, options.headers[key]);
   }
-  var send = function(callback) {
-    req = request[METHOD_MAP[method]](url);
-    // Allow intercepting of the request object to inject sync-wide things like
-    // an oAuth token.
-    module.exports.editRequest(req, method, model, options);
-    // Inject POST/PUT data in body or GET data in querystring
-    if (method == 'create' || method == 'update') {
-      req.send(data);
+  req.timeout(2000).end(function(err, res) {
+    if (err || !res.ok) {
+      error(options, (err || res), reject);
     } else {
-      req.query(data);
-    }
-    // Add common Backbone options like `headers`
-    if (options.headers) {
-      for(key in options.headers) req.set(key, options.headers[key]);
-    }
-    req.end(function(err, res) {
-      if (err) {
-        error(err);
-      } else if (!res.ok) {
-        error(res);
-      } else if (cached) {
-        cacheClient.set(cacheKey, JSON.stringify({
+      if (options.cache && module.exports.cacheClient) {
+        module.exports.cacheClient.set(cacheKey, JSON.stringify({
           body: res.body,
           headers: res.headers
-        }), function() {
-          success(res);
-        });
-        cacheClient.expire(cacheKey, cacheTime);
-      } else {
-        success(res);
+        }));
+        module.exports.cacheClient.expire(cacheKey,
+          (options.cacheTime || module.exports.defaultCacheTime));
       }
-    });
-  }
+      success(options, res, resolve);
+    }
+  });
+}
 
-  // If cache: true is set then try to retrieve it from cache first.
-  if (cached) {
-    cacheClient.get(cacheKey, function(err, cachedJSON) {
-      if (err) {
-        error(err);
-      } else if (cachedJSON) {
-        success(JSON.parse(cachedJSON));
-      } else {
-        send();
-      }
-    });
+var success = function(options, res, resolve) {
+  options.res = { headers: res.headers };
+  if (options.success) options.success(res.body);
+  if (options.complete) options.complete(res.body);
+  console.log('resolve')
+  resolve(res.body);
+}
 
-  // Otherwise just send the request.
-  } else {
-    send();
-  }
+var error = function(options, err, reject) {
+  if (options.error) options.error(err);
+  if (options.complete) options.complete(err);
+  reject(err);
+}
 
-  // Trigger request and return our Q promise
-  model.trigger('request', model, req, options);
-  return deferred.promise;
+module.exports = function(method, model, options) {
+  var url = (options.url ||
+    (typeof model.url == 'function' ? model.url() : model.url));
+  var data = (options.data ||
+    (method === 'create' || method === 'update' ? model.toJSON() : {}));
+  var cacheKey = url + JSON.stringify(data);
+
+  return Q.promise(function(resolve, reject) {
+    if (options.cache && module.exports.cacheClient) {
+      module.exports.cacheClient.get(cacheKey, function(err, cachedJSON) {
+        if (err) {
+          error(options, err, reject);
+        } else if (cachedJSON) {
+          success(options, JSON.parse(cachedJSON), resolve);
+        } else {
+          send(method, model, options, url, data, resolve, reject);
+        }
+      });
+    } else {
+      send(method, model, options, url, data, resolve, reject);
+    }
+    model.trigger('request', model, {}, options);
+  });
 };
 
 // Used to modify request objects mid-flight
-module.exports.editRequest = function(req) {}
+module.exports.editRequest = function(req) {};
 
 // When set will look for the cache: true option in requests and use this client
 // to naively cache requests.
-module.exports.cacheClient = null
-module.exports.defaultCacheTime = 3600
+module.exports.cacheClient = null;
+module.exports.defaultCacheTime = 3600;
