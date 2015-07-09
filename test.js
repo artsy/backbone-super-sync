@@ -210,7 +210,7 @@ describe('Backbone Super Sync', function() {
       });
     });
 
-    it('works caches with deferreds', function(done) {
+    it('works with deferreds', function(done) {
       model.fetch({
         cache: true,
         success: function() {

@@ -32,6 +32,26 @@ superSync.editRequest = function(req, method, model, options) {
 };
 ````
 
+## Request timeouts
+
+By default Backbone super sync will timeout requests that take longer than 2 seconds. This is to avoid
+long hanging requests that can potentionally leak memory. You can set this to be longer for all requests, e.g.
+
+````javascript
+superSync.timeout = 5000; // All requests timeout after 5 seconds
+````
+
+...or you can set this per-request by specifying it in options, e.g.
+
+````
+model.fetch({
+  timeout: 5000,
+  error: function(model, err) {
+    if (err.message.match('timeout') alert('too slow!');
+  }
+});
+````
+
 ## Built-in request caching
 
 At [Artsy](http://artsy.net) we naively cache our server-side Backbone.sync requests. You can configure Backbone Super Sync to do this by setting `superSync.cacheClient = client`. If the `cache: true` option is set in a `model.fetch`, Backbone Super Sync will use the `cacheClient` to cache GET requests. The `client` API is based off of [node-redis](https://github.com/mranney/node_redis) but you could easily leverage this API to roll your own caching mechanism.
