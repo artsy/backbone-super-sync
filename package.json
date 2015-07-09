@@ -1,6 +1,6 @@
 {
   "name": "backbone-super-sync",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Server-side Backbone.sync adapter using super agent.",
   "keywords": [
     "backbone",

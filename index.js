@@ -50,7 +50,7 @@ var urlDataCacheKey = function(method, model, options) {
   var url = (options.url ||
     (typeof model.url == 'function' ? model.url() : model.url));
   var data = (options.data ||
-    (method === 'create' || method === 'update' ? model.toJSON() : {}));
+    (method === 'create' || method === 'update' ? model.toJSON(options) : {}));
   var cacheKey = url + JSON.stringify(data);
   return [url, data, cacheKey];
 }
@@ -88,7 +88,7 @@ var send = function (method, model, options, resolve, reject) {
 
   // Send the actual http request with a timeout to ensure long hanging
   // requests don't leak memory.
-  req.timeout(module.exports.timeout || options.timeout).end(function(err, res) {
+  req.timeout(options.timeout || module.exports.timeout).end(function(err, res) {
     if (err || !res.ok) return error(options, (err || res), reject);
     if (options.cache && module.exports.cacheClient) {
       module.exports.cacheClient.set(cacheKey, JSON.stringify({

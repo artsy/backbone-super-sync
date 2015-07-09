@@ -19,6 +19,12 @@ app.all('/custom/url', function(req, res) {
   lastRequest = req;
   res.send({ baz: 'qux' });
 });
+app.all('/timeout', function(req, res) {
+  lastRequest = req;
+  setTimeout(function() {
+    res.send({ baz: 'qux' });
+  }, 1000);
+});
 app.get('/err', function(req, res) {
   res.send(404, { message: 'Not Found' });
 });
@@ -149,6 +155,17 @@ describe('Backbone Super Sync', function() {
       model.url = 'http://localhost:5000/err'
       model.fetch().then(function() {}, function() {
         done()
+      });
+    });
+
+    it('can timeout at a custom ms when specificed', function(done) {
+      model.url = 'http://localhost:5000/timeout'
+      model.fetch({
+        timeout: 10,
+        error: function(m, err) {
+          err.message.should.containEql('timeout of 10ms');
+          done();
+        }
       });
     });
   });
@@ -292,6 +309,19 @@ describe('Backbone Super Sync', function() {
       model.save({ foo: 'bar' }, {
         success: function() {
           lastRequest.body.foo.should.equal('bar');
+          done();
+        }
+      });
+    });
+
+    it('passes options to toJSON', function(done) {
+      model.toJSON = function(options) {
+        return { foo: options.foo }
+      }
+      model.save({}, {
+        foo: 'moo',
+        success: function() {
+          lastRequest.body.foo.should.equal('moo');
           done();
         }
       });
