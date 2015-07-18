@@ -76,8 +76,8 @@ var send = function (method, model, options, resolve, reject) {
   // module.exports.editRequest(req, method, model, options);
 
   module.exports.editRequest(request[METHOD_MAP[method]](url)
-    .send(data)
-    .query(data)
+    .send(method == 'create' || method == 'update' ? data : {})
+    .query(method == 'create' || method == 'update' ? {} : data)
     .set(options.headers || {})
     .timeout(options.timeout || module.exports.timeout)
     .end(function(err, res) {
