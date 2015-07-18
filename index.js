@@ -75,7 +75,7 @@ var send = function (method, model, options, resolve, reject) {
   // an oAuth token.
   // module.exports.editRequest(req, method, model, options);
 
-  module.exports.editRequest(request[METHOD_MAP[method]](url)
+  request[METHOD_MAP[method]](url)
     .send(method == 'create' || method == 'update' ? data : {})
     .query(method == 'create' || method == 'update' ? {} : data)
     .set(options.headers || {})
@@ -91,7 +91,7 @@ var send = function (method, model, options, resolve, reject) {
           (options.cacheTime || module.exports.defaultCacheTime));
       }
       success(options, res, resolve);
-    }), method, model, options);
+    });
   model.trigger('request', model, {});
 }
 
