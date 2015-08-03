@@ -74,10 +74,9 @@ var send = function (method, model, options, resolve, reject) {
   // Allow intercepting of the request object to inject sync-wide things like
   // an oAuth token.
   // module.exports.editRequest(req, method, model, options);
-
   request[METHOD_MAP[method]](url)
-    .send(method == 'create' || method == 'update' ? data : {})
-    .query(method == 'create' || method == 'update' ? {} : data)
+    .send(method == 'create' || method == 'update' ? data : null)
+    .query(method == 'create' || method == 'update' ? null : data)
     .set(options.headers || {})
     .timeout(options.timeout || module.exports.timeout)
     .end(function(err, res) {

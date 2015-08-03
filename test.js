@@ -10,6 +10,16 @@ app.use(function(req, res, next) {
   requestCount++;
   next();
 });
+app.get('/raw/body', function(req, res, next) {
+  lastRequest = req;
+  req.rawBody = '';
+  req.on('data', function(chunk) {
+    req.rawBody += chunk;
+  });
+  req.on('end', function() {
+    res.send({ foo: 'bar' });
+  });
+});
 app.use(bodyParser());
 app.all('/foo/bar', function(req, res) {
   lastRequest = req;
@@ -152,6 +162,16 @@ describe('Backbone Super Sync', function() {
         timeout: 10,
         error: function(m, err) {
           err.message.should.containEql('timeout of 10ms');
+          done();
+        }
+      });
+    });
+
+    it('does not send empty body params', function(done) {
+      model.url = 'http://localhost:5000/raw/body';
+      model.fetch({
+        success: function(m, err) {
+          lastRequest.rawBody.length.should.equal(0)
           done();
         }
       });
@@ -310,6 +330,16 @@ describe('Backbone Super Sync', function() {
         foo: 'moo',
         success: function() {
           lastRequest.body.foo.should.equal('moo');
+          done();
+        }
+      });
+    });
+
+    it('does not send empty query params', function(done) {
+      model.url = 'http://localhost:5000/foo/bar'
+      model.save({}, {
+        success: function(m, err) {
+          Object.keys(lastRequest.query).length.should.equal(0);
           done();
         }
       });
