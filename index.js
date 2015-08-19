@@ -73,7 +73,6 @@ var send = function (method, model, options, resolve, reject) {
 
   // Allow intercepting of the request object to inject sync-wide things like
   // an oAuth token.
-  // module.exports.editRequest(req, method, model, options);
   request[METHOD_MAP[method]](url)
     .send(method == 'create' || method == 'update' ? data : null)
     .query(method == 'create' || method == 'update' ? null : data)
@@ -121,11 +120,10 @@ var error = function(options, err, reject) {
   reject(err);
 }
 
-// Configuration that can be overwritten by the user. Includes being able
-// to modify the request, a cache client library, default cache expiry, and
+// Configuration that can be overwritten by the user. Includes a optional
+// cache client library integration, default cache expiry, and
 // the default timeout for a sent http request.
 
-module.exports.editRequest = function(req) {};
 module.exports.cacheClient = null;
 module.exports.defaultCacheTime = 3600;
 module.exports.timeout = 2000;
