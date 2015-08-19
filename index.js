@@ -20,21 +20,23 @@ var METHOD_MAP = {
 
 module.exports = function(method, model, options) {
   var cacheKey = urlDataCacheKey(method, model, options)[2];
-  return Q.promise(function(resolve, reject) {
-    if (options.cache && module.exports.cacheClient) {
-      module.exports.cacheClient.get(cacheKey, function(err, cachedJSON) {
-        if (err || cachedJSON) model.trigger('request', model, {}, options);
-        if (err) {
-          error(options, err, reject);
-        } else if (cachedJSON) {
-          success(options, JSON.parse(cachedJSON), resolve);
-        } else {
-          send(method, model, options, resolve, reject);
-        }
-      });
-    } else {
-      send(method, model, options, resolve, reject);
-    }
+  var deferred = Q.defer();
+  if (options.cache && module.exports.cacheClient) {
+    module.exports.cacheClient.get(cacheKey, function(err, cachedJSON) {
+      if (err || cachedJSON) model.trigger('request', model, {}, options);
+      if (err) {
+        error(options, err, deferred.reject);
+      } else if (cachedJSON) {
+        success(options, JSON.parse(cachedJSON), deferred.resolve);
+      } else {
+        send(method, model, options, deferred.resolve, deferred.reject);
+      }
+    });
+  } else {
+    send(method, model, options, deferred.resolve, deferred.reject);
+  }
+  return deferred.promise.fin(function() {
+    deferred = null;
   });
 };
 
@@ -68,39 +70,27 @@ var send = function (method, model, options, resolve, reject) {
   var url = urlDataCacheKey(method, model, options)[0];
   var data = urlDataCacheKey(method, model, options)[1];
   var cacheKey = urlDataCacheKey(method, model, options)[2];
-  var req = request[METHOD_MAP[method]](url);
 
   // Allow intercepting of the request object to inject sync-wide things like
   // an oAuth token.
-  module.exports.editRequest(req, method, model, options);
-
-  // Inject POST/PUT data in body or GET data in querystring
-  if (method == 'create' || method == 'update') {
-    req.send(data);
-  } else {
-    req.query(data);
-  }
-
-  // Add common Backbone options like `headers`
-  if (options.headers) {
-    for(key in options.headers) req.set(key, options.headers[key]);
-  }
-
-  // Send the actual http request with a timeout to ensure long hanging
-  // requests don't leak memory.
-  req.timeout(options.timeout || module.exports.timeout).end(function(err, res) {
-    if (err || !res.ok) return error(options, (err || res), reject);
-    if (options.cache && module.exports.cacheClient) {
-      module.exports.cacheClient.set(cacheKey, JSON.stringify({
-        body: res.body,
-        headers: res.headers
-      }));
-      module.exports.cacheClient.expire(cacheKey,
-        (options.cacheTime || module.exports.defaultCacheTime));
-    }
-    success(options, res, resolve);
-  });
-  model.trigger('request', model, req);
+  request[METHOD_MAP[method]](url)
+    .send(method == 'create' || method == 'update' ? data : null)
+    .query(method == 'create' || method == 'update' ? null : data)
+    .set(options.headers || {})
+    .timeout(options.timeout || module.exports.timeout)
+    .end(function(err, res) {
+      if (err || !res.ok) return error(options, (err || res), reject);
+      if (options.cache && module.exports.cacheClient) {
+        module.exports.cacheClient.set(cacheKey, JSON.stringify({
+          body: res.body,
+          headers: res.headers
+        }));
+        module.exports.cacheClient.expire(cacheKey,
+          (options.cacheTime || module.exports.defaultCacheTime));
+      }
+      success(options, res, resolve);
+    });
+  model.trigger('request', model, {});
 }
 
 // DRYs up resolving the callbacks and deferreds for a successful response,
@@ -130,11 +120,10 @@ var error = function(options, err, reject) {
   reject(err);
 }
 
-// Configuration that can be overwritten by the user. Includes being able
-// to modify the request, a cache client library, default cache expiry, and
+// Configuration that can be overwritten by the user. Includes a optional
+// cache client library integration, default cache expiry, and
 // the default timeout for a sent http request.
 
-module.exports.editRequest = function(req) {};
 module.exports.cacheClient = null;
 module.exports.defaultCacheTime = 3600;
 module.exports.timeout = 2000;
