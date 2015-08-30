@@ -151,7 +151,7 @@ describe('Backbone Super Sync', function() {
 
     it('can error from promises', function (done) {
       model.url = 'http://localhost:5000/err'
-      model.fetch().then(function() {}, function() {
+      model.fetch().catch(function() {
         done()
       });
     });
