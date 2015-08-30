@@ -11,7 +11,7 @@ Backbone.sync = require('backbone-super-sync');
 
 ## Request timeouts
 
-By default Backbone super sync will timeout requests that take longer than 2 seconds. This is to avoid
+By default Backbone super sync will timeout requests that take longer than 10 seconds. This is to avoid
 long hanging requests that can potentionally leak memory. You can set this to be longer for all requests, e.g.
 
 ````javascript
@@ -76,7 +76,7 @@ Backbone.sync = function(method, model, options) {
   options.headers['x-xapp-token'] = 'foobar';
   return sync(method, model, options);
 }
-```` 
+````
 
 ## Contributing
 
