@@ -68,7 +68,6 @@ module.exports = function(method, model, options) {
     } else {
       send();
     }
-    // model.trigger('request', model, {}, options);
   });
 }
 

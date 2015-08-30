@@ -15,7 +15,7 @@ By default Backbone super sync will timeout requests that take longer than 10 se
 long hanging requests that can potentionally leak memory. You can set this to be longer for all requests, e.g.
 
 ````javascript
-superSync.timeout = 5000; // All requests timeout after 5 seconds
+superSync.timeout = 60000; // All requests timeout after 1 minute
 ````
 
 ...or you can set this per-request by specifying it in options, e.g.
