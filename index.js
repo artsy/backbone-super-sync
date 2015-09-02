@@ -125,7 +125,6 @@ var error = function(options, err, reject) {
 // cache client library integration, default cache expiry, and
 // the default timeout for a sent http request.
 
-module.exports.Promise = Promise;
 module.exports.cacheClient = null;
 module.exports.defaultCacheTime = 3600;
 module.exports.timeout = 10000;
