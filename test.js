@@ -70,7 +70,7 @@ describe('Backbone Super Sync', function() {
       });
     });
 
-    xit("it returns the full 'res' object from superagent because it is the " +
+    it("it returns the full 'res' object from superagent because it is the " +
        "closest thing to an xhr we have", function(done) {
       model.url = 'http://localhost:5000/err'
       model.fetch({
@@ -137,6 +137,7 @@ describe('Backbone Super Sync', function() {
       model.url = 'http://localhost:5000/err'
       model.fetch({
         complete: function(res) {
+          res.message.should.equal("Not Found");
           done();
         }
       });
@@ -160,7 +161,7 @@ describe('Backbone Super Sync', function() {
       model.fetch({
         timeout: 10,
         error: function(m, err) {
-          err.message.should.containEql('socket hang up');
+          err.message.should.containEql('timeout of 10ms');
           done();
         }
       });
