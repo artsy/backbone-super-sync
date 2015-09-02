@@ -155,12 +155,12 @@ describe('Backbone Super Sync', function() {
       });
     });
 
-    xit('can timeout at a custom ms when specificed', function(done) {
+    it('can timeout at a custom ms when specificed', function(done) {
       model.url = 'http://localhost:5000/timeout'
       model.fetch({
         timeout: 10,
         error: function(m, err) {
-          err.message.should.containEql('timeout of 10ms');
+          err.message.should.containEql('socket hang up');
           done();
         }
       });

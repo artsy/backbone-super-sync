@@ -117,7 +117,8 @@ var send = function (method, model, options, resolve, reject) {
   if (method == 'create' || method == 'update') req.write(body);
   req.end();
   // Allow for `timeout` option
-  timeout = setTimeout(req.abort, options.timeout || module.exports.timeout);
+  timeout = setTimeout(function() { req.abort() },
+    options.timeout || module.exports.timeout);
 }
 
 // DRYs up resolving the callbacks and deferreds for a successful response,
