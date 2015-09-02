@@ -20,7 +20,7 @@ var METHOD_MAP = {
 
 module.exports = function(method, model, options) {
   var cacheKey = urlDataCacheKey(method, model, options)[2];
-  return new Promise(function(resolve, reject) {
+  var promise = new Promise(function(resolve, reject) {
     if (options.cache && module.exports.cacheClient) {
       module.exports.cacheClient.get(cacheKey, function(err, cachedJSON) {
         if (err || cachedJSON) model.trigger('request', model, {}, options);
@@ -36,6 +36,9 @@ module.exports = function(method, model, options) {
       send(method, model, options, resolve, reject);
     }
   });
+  // Silence bluebird's uncaught rejection if we use a callback
+  if(options.error) promise.catch(function(){});
+  return promise;
 };
 
 // Helper to compute the requesting url, params, and cache key based off those
@@ -122,6 +125,7 @@ var error = function(options, err, reject) {
 // cache client library integration, default cache expiry, and
 // the default timeout for a sent http request.
 
+module.exports.Promise = Promise;
 module.exports.cacheClient = null;
 module.exports.defaultCacheTime = 3600;
 module.exports.timeout = 10000;

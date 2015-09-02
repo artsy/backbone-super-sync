@@ -4,8 +4,8 @@ var superSync = require('./index.js');
 var bodyParser = require('body-parser');
 var lastRequest, model, requestCount = 0;
 var should = require('should');
-
 var app = express();
+
 app.use(function(req, res, next) {
   requestCount++;
   next();
@@ -88,6 +88,21 @@ describe('Backbone Super Sync', function() {
           res.toString().should.containEql("ECONNREFUSED");
           done();
         }
+      });
+    });
+
+    it("can handle errors and promise catches", function(done) {
+      var count = 0;
+      model.url = 'http://localhost:5001/trueerr'
+      model.fetch({
+        error: function(model, res) {
+          res.toString().should.containEql("ECONNREFUSED");
+          count++;
+        }
+      }).catch(function() {
+        count++;
+        count.should.equal(2);
+        done();
       });
     });
 
